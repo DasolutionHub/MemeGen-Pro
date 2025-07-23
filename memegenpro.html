@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Meme Generator PWA - Create hilarious memes instantly">
+  <meta name="theme-color" content="#7e57c2">
+  <title>Meme Generator PWA | Create Hilarious Memes</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #121212;
+      --primary: #ff6b6b;
+      --primary-light: #ff8e8e;
+      --secondary: #4ecdc4;
+      --accent: #ffbe0b;
+      --text-light: #ffffff;
+      --text-dark: #d0d0d0;
+      --card-bg: rgba(30, 30, 30, 0.85);
+      --border-radius: 16px;
+      --transition: all 0.3s ease;
+    }
+    
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+    }
+    
+    /* Animated Particle Background */
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--primary);
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 0 0 15px rgba(255, 107, 107, 0.7);
+    }
+    
+    h1 {
+      font-size: 3rem;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 10px;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+      letter-spacing: -1px;
+    }
+    
+    .subtitle {
+      font-size: 1.3rem;
+      color: var(--text-dark);
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 30px;
+      font-family: 'Comic Neue', cursive;
+    }
+    
+    .app-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .controls {
+      flex: 1;
+      min-width: 300px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .controls:hover {
+      transform: translateY(-5px) rotate(1deg);
+      box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3);
+    }
+    
+    .preview-container {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .preview-container:hover {
+      transform: translateY(-5px) rotate(-1deg);
+      box-shadow: 0 15px 40px rgba(78, 205, 196, 0.3);
+    }
+    
+    .control-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .control-group::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--text-light);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+    }
+    
+    select, input, textarea {
+      width: 100%;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--primary);
+      outline: none;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .slider-container input[type="range"] {
+      flex: 1;
+      height: 8px;
+      -webkit-appearance: none;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      outline: none;
+    }
+    
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+    }
+    
+    .slider-value {
+      min-width: 40px;
+      text-align: center;
+      background: var(--primary);
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+    
+    .color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    
+    .color-option {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: var(--transition);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .color-option:hover {
+      transform: scale(1.15);
+    }
+    
+    .color-option.selected {
+      border-color: white;
+      transform: scale(1.2);
+      box-shadow: 0 0 15px currentColor;
+    }
+    
+    .advanced-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      cursor: pointer;
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 12px;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+    
+    .advanced-toggle:hover {
+      background: rgba(255, 190, 11, 0.1);
+    }
+    
+    .advanced-options {
+      display: none;
+      margin-top: 15px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #000;
+      padding: 16px 30px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+      letter-spacing: 0.5px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(255, 107, 107, 0.6);
+    }
+    
+    #previewCanvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--border-radius);
+      background: black;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 3px solid var(--accent);
+    }
+    
+    .error-message {
+      color: var(--primary);
+      padding: 12px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: var(--border-radius);
+      margin-top: 15px;
+      display: none;
+      border: 1px solid var(--primary);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      margin-top: auto;
+      color: var(--text-dark);
+      font-size: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Mobile Menu Styles */
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 10px;
+      transition: var(--transition);
+    }
+    
+    .mobile-menu-btn:hover {
+      color: var(--primary);
+      transform: rotate(90deg);
+    }
+    
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      background: rgba(30, 30, 30, 0.95);
+      border: 1px solid var(--primary);
+      border-radius: var(--border-radius);
+      z-index: 1000;
+      width: 250px;
+      flex-direction: column;
+      padding: 20px;
+      gap: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .mobile-menu a {
+      text-decoration: none;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 15px;
+      border-radius: 12px;
+      transition: var(--transition);
+      font-size: 1.1rem;
+    }
+    
+    .mobile-menu a:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: var(--primary);
+      transform: translateX(5px);
+    }
+    
+    /* Install Banner */
+    #installBanner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 500px;
+      background: rgba(30, 30, 30, 0.95);
+      border: 1px solid var(--primary);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transition: opacity 0.5s ease, bottom 0.5s ease;
+    }
+    
+    #installBanner.show {
+      opacity: 1;
+      bottom: 30px;
+    }
+    
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .banner-icon {
+      font-size: 2.5rem;
+      color: var(--primary);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .banner-text h3 {
+      color: var(--primary);
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+    }
+    
+    .banner-text p {
+      color: var(--text-light);
+      font-size: 1rem;
+      margin: 0;
+    }
+    
+    .banner-buttons {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .banner-btn {
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+    
+    .install-btn {
+      background: var(--primary);
+      color: #000;
+      border: none;
+    }
+    
+    .install-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+    
+    .close-btn {
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* How It Works Section */
+    .how-section {
+      padding: 40px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      margin: 40px 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .how-section h2 {
+      color: var(--primary);
+      font-size: 2.5rem;
+      margin-bottom: 25px;
+      text-align: center;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 0 0 15px rgba(255, 107, 107, 0.7);
+    }
+    
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+    
+    .step-card {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      text-align: center;
+      border: 1px solid var(--secondary);
+      transition: var(--transition);
+    }
+    
+    .step-card:hover {
+      transform: translateY(-10px) rotate(3deg);
+      box-shadow: 0 15px 30px rgba(78, 205, 196, 0.3);
+    }
+    
+    .step-icon {
+      font-size: 3rem;
+      color: var(--secondary);
+      margin-bottom: 20px;
+    }
+    
+    .step-title {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      font-family: 'Comic Neue', cursive;
+    }
+    
+    .step-description {
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 900px) {
+      .app-container {
+        flex-direction: column;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .subtitle {
+        font-size: 1.1rem;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      #installBanner {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .banner-content {
+        flex-direction: column;
+      }
+      
+      .banner-buttons {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .logo {
+        font-size: 1.5rem;
+      }
+      
+      .controls, .preview-container {
+        padding: 20px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div id="particles-js"></div>
+  
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-robot"></i>
+        <span>MemeGen Pro</span>
+      </div>
+      <button id="mobileMenuBtn" class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div id="mobileMenu" class="mobile-menu">
+        <a href="#" id="homeLink"><i class="fas fa-home"></i> Home</a>
+        <a href="#how-it-works"><i class="fas fa-question-circle"></i> How It Works</a>
+        <a href="#" id="installLink"><i class="fas fa-download"></i> Install App</a>
+      </div>
+    </header>
+    
+    <h1>AI Meme Generator v3.0 🤖</h1>
+    <p class="subtitle">Create hilarious memes in seconds with our meme-tastic generator!</p>
+    
+    <div class="app-container">
+      <div class="controls">
+        <div class="control-group">
+          <label for="category"><i class="fas fa-folder"></i> Category</label>
+          <select id="category">
+            <option value="All Templates">All Templates</option>
+            <option value="Dark Humor">Dark Humor</option>
+            <option value="Sarcastic">Sarcastic</option>
+            <option value="Animals">Animals</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Reaction">Reaction</option>
+            <option value="Classic">Classic</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="template"><i class="fas fa-image"></i> Template</label>
+          <select id="template"></select>
+        </div>
+        
+        <div class="control-group">
+          <label for="top-text"><i class="fas fa-text-height"></i> Top Text</label>
+          <textarea id="top-text" placeholder="Enter your hilarious top text..."></textarea>
+        </div>
+        
+        <div class="control-group">
+          <label for="bottom-text"><i class="fas fa-text-height"></i> Bottom Text</label>
+          <textarea id="bottom-text" placeholder="Enter your witty bottom text..."></textarea>
+        </div>
+        
+        <div class="control-group">
+          <label for="font-size"><i class="fas fa-font"></i> Font Size</label>
+          <div class="slider-container">
+            <input type="range" id="font-size" min="20" max="80" value="40">
+            <span id="font-size-value" class="slider-value">40</span>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label><i class="fas fa-palette"></i> Text Color</label>
+          <div class="color-options" id="text-color-options">
+            <div class="color-option selected" style="background: white;" data-color="white"></div>
+            <div class="color-option" style="background: black;" data-color="black"></div>
+            <div class="color-option" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+            <div class="color-option" style="background: #4ecdc4;" data-color="#4ecdc4"></div>
+            <div class="color-option" style="background: #ffbe0b;" data-color="#ffbe0b"></div>
+            <div class="color-option" style="background: #8338ec;" data-color="#8338ec"></div>
+          </div>
+        </div>
+        
+        <div class="control-group">
+          <label><i class="fas fa-border-all"></i> Outline Color</label>
+          <div class="color-options" id="outline-color-options">
+            <div class="color-option selected" style="background: black;" data-color="black"></div>
+            <div class="color-option" style="background: white;" data-color="white"></div>
+            <div class="color-option" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+            <div class="color-option" style="background: #4ecdc4;" data-color="#4ecdc4"></div>
+            <div class="color-option" style="background: #ffbe0b;" data-color="#ffbe0b"></div>
+            <div class="color-option" style="background: #8338ec;" data-color="#8338ec"></div>
+          </div>
+        </div>
+        
+        <div class="advanced-toggle" id="advanced-toggle">
+          <i class="fas fa-cog"></i>
+          <span>Advanced Options</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        
+        <div class="advanced-options" id="advanced-options">
+          <div class="control-group">
+            <label for="top-x"><i class="fas fa-arrows-left-right"></i> Top Text (Left-Right)</label>
+            <div class="slider-container">
+              <input type="range" id="top-x" min="0" max="100" value="50">
+              <span id="top-x-value" class="slider-value">50</span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="top-y"><i class="fas fa-arrows-up-down"></i> Top Text (Up-Down)</label>
+            <div class="slider-container">
+              <input type="range" id="top-y" min="0" max="100" value="10">
+              <span id="top-y-value" class="slider-value">10</span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="bottom-x"><i class="fas fa-arrows-left-right"></i> Bottom Text (Left-Right)</label>
+            <div class="slider-container">
+              <input type="range" id="bottom-x" min="0" max="100" value="50">
+              <span id="bottom-x-value" class="slider-value">50</span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="bottom-y"><i class="fas fa-arrows-up-down"></i> Bottom Text (Up-Down)</label>
+            <div class="slider-container">
+              <input type="range" id="bottom-y" min="0" max="100" value="90">
+              <span id="bottom-y-value" class="slider-value">90</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="error-message" id="error-message"></div>
+      </div>
+      
+      <div class="preview-container">
+        <canvas id="previewCanvas" width="500" height="500"></canvas>
+        <button id="download-btn" class="btn">
+          <i class="fas fa-download"></i> Download Meme
+        </button>
+      </div>
+    </div>
+    
+    <!-- How It Works Section -->
+    <div id="how-it-works" class="how-section">
+      <h2>How It Works</h2>
+      <div class="steps-container">
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3 class="step-title">Choose a Template</h3>
+          <p class="step-description">Browse through our collection of meme templates and select the perfect one for your joke.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fas fa-font"></i>
+          </div>
+          <h3 class="step-title">Add Your Text</h3>
+          <p class="step-description">Enter your hilarious captions in the top and bottom text fields.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fas fa-palette"></i>
+          </div>
+          <h3 class="step-title">Customize</h3>
+          <p class="step-description">Adjust colors, size, and position to make your meme perfect.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fas fa-download"></i>
+          </div>
+          <h3 class="step-title">Download & Share</h3>
+          <p class="step-description">Download your meme and share it with the world to spread the laughter!</p>
+        </div>
+      </div>
+    </div>
+    
+    <footer>
+      © 2025 MemeGen Pro | Create and share memes offline
+    </footer>
+  </div>
+  
+  <!-- Add to Home Screen Banner -->
+  <div id="installBanner">
+    <div class="banner-content">
+      <div class="banner-icon">
+        <i class="fas fa-download"></i>
+      </div>
+      <div class="banner-text">
+        <h3>Install MemeGen Pro</h3>
+        <p>Create memes anytime, anywhere - even offline!</p>
+      </div>
+    </div>
+    <div class="banner-buttons">
+      <button id="installBtn" class="banner-btn install-btn">Install Now</button>
+      <button id="closeBanner" class="banner-btn close-btn">Not Now</button>
+    </div>
+  </div>
+
+  <!-- Particles.js Library -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  
+  <script>
+    // Initialize particle background
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: ["#ff6b6b", "#4ecdc4", "#ffbe0b", "#8338ec"] },
+        shape: { type: "circle" },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: "none",
+          random: true,
+          straight: false,
+          out_mode: "out"
+        }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" }
+        }
+      }
+    });
+    
+    // Meme Generator Configuration
+    const MEME_TEMPLATES = [
+      { id: "distracted-boyfriend", name: "Distracted Boyfriend", category: "Classic", url: "https://i.imgflip.com/1ur9b0.jpg" },
+      { id: "drake", name: "Drake Hotline Bling", category: "Classic", url: "https://i.imgflip.com/30b1gx.jpg" },
+      { id: "two-buttons", name: "Two Buttons", category: "Sarcastic", url: "https://i.imgflip.com/1g8my4.jpg" },
+      { id: "expanding-brain", name: "Expanding Brain", category: "Dark Humor", url: "https://i.imgflip.com/1jwhww.jpg" },
+      { id: "change-my-mind", name: "Change My Mind", category: "Classic", url: "https://i.imgflip.com/24y43o.jpg" },
+      { id: "left-exit", name: "Left Exit 12 Off Ramp", category: "Dark Humor", url: "https://i.imgflip.com/22bdq6.jpg" },
+      { id: "boardroom", name: "Boardroom Meeting Suggestion", category: "Sarcastic", url: "https://i.imgflip.com/m78d.jpg" },
+      { id: "pigeon", name: "Is This A Pigeon", category: "Classic", url: "https://i.imgflip.com/1o00in.jpg" },
+      { id: "waiting-skeleton", name: "Waiting Skeleton", category: "Sarcastic", url: "https://i.imgflip.com/2fm6x.jpg" },
+      { id: "spongebob", name: "Mocking Spongebob", category: "Classic", url: "https://i.imgflip.com/1otk96.jpg" },
+      { id: "scroll-of-truth", name: "The Scroll Of Truth", category: "Sarcastic", url: "https://i.imgflip.com/21tqf4.jpg" },
+      { id: "disaster-girl", name: "Disaster Girl", category: "Reaction", url: "https://i.imgflip.com/23ls.jpg" },
+      { id: "woman-cat", name: "Woman Yelling At Cat", category: "Animals", url: "https://i.imgflip.com/345v97.jpg" },
+      { id: "always-has-been", name: "Always Has Been", category: "Classic", url: "https://i.imgflip.com/46e43q.png" },
+      { id: "spongebob-leaving", name: "Spongebob Ight Imma Head Out", category: "Gaming", url: "https://i.imgflip.com/39t1o.jpg" },
+      { id: "one-does-not", name: "One Does Not Simply", category: "Classic", url: "https://i.imgflip.com/1bij.jpg" },
+      { id: "batman-slapping", name: "Batman Slapping Robin", category: "Gaming", url: "https://i.imgflip.com/9ehk.jpg" },
+      { id: "surprised-pikachu", name: "Surprised Pikachu", category: "Reaction", url: "https://i.imgflip.com/2kbn1e.jpg" },
+      { id: "sad-escobar", name: "Sad Pablo Escobar", category: "Dark Humor", url: "https://i.imgflip.com/1c1uej.jpg" },
+      { id: "bernie", name: "Bernie I Am Once Again Asking", category: "Classic", url: "https://i.imgflip.com/46e43q.png" },
+    ];
+
+    // DOM Elements
+    const categorySelect = document.getElementById('category');
+    const templateSelect = document.getElementById('template');
+    const topTextInput = document.getElementById('top-text');
+    const bottomTextInput = document.getElementById('bottom-text');
+    const fontSizeInput = document.getElementById('font-size');
+    const fontSizeValue = document.getElementById('font-size-value');
+    const textColorOptions = document.getElementById('text-color-options');
+    const outlineColorOptions = document.getElementById('outline-color-options');
+    const topXInput = document.getElementById('top-x');
+    const topXValue = document.getElementById('top-x-value');
+    const topYInput = document.getElementById('top-y');
+    const topYValue = document.getElementById('top-y-value');
+    const bottomXInput = document.getElementById('bottom-x');
+    const bottomXValue = document.getElementById('bottom-x-value');
+    const bottomYInput = document.getElementById('bottom-y');
+    const bottomYValue = document.getElementById('bottom-y-value');
+    const advancedToggle = document.getElementById('advanced-toggle');
+    const advancedOptions = document.getElementById('advanced-options');
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    const downloadBtn = document.getElementById('download-btn');
+    const errorMessage = document.getElementById('error-message');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const installLink = document.getElementById('installLink');
+    const homeLink = document.getElementById('homeLink');
+    const installBanner = document.getElementById('installBanner');
+    const installBtn = document.getElementById('installBtn');
+    const closeBanner = document.getElementById('closeBanner');
+    
+    // State
+    let selectedTextColor = 'white';
+    let selectedOutlineColor = 'black';
+    let currentTemplate = null;
+    let currentImage = null;
+    let deferredPrompt = null;
+    
+    // Initialize the application
+    function init() {
+      populateTemplates();
+      setupEventListeners();
+      updateSliderValues();
+      generateMeme();
+      
+      // Initialize service worker for PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      }
+      
+      // Set up PWA install prompt
+      setupPWAInstall();
+    }
+    
+    // Set up PWA install functionality
+    function setupPWAInstall() {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install banner after a delay
+        setTimeout(() => {
+          if (!localStorage.getItem('installBannerDismissed')) {
+            installBanner.classList.add('show');
+          }
+        }, 5000);
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        console.log('App installed successfully');
+        installBanner.classList.remove('show');
+        localStorage.setItem('appInstalled', 'true');
+      });
+      
+      installBtn.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+        
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+              localStorage.setItem('appInstalled', 'true');
+            }
+            deferredPrompt = null;
+          });
+        }
+      });
+      
+      closeBanner.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+        localStorage.setItem('installBannerDismissed', 'true');
+      });
+      
+      installLink.addEventListener('click', () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+        } else {
+          installBanner.classList.add('show');
+        }
+      });
+    }
+    
+    // Populate templates based on selected category
+    function populateTemplates() {
+      const category = categorySelect.value;
+      templateSelect.innerHTML = '';
+      
+      const templates = category === 'All Templates' 
+        ? MEME_TEMPLATES 
+        : MEME_TEMPLATES.filter(t => t.category === category);
+      
+      templates.forEach(template => {
+        const option = document.createElement('option');
+        option.value = template.id;
+        option.textContent = template.name;
+        templateSelect.appendChild(option);
+      });
+      
+      currentTemplate = templates[0] || null;
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Category change
+      categorySelect.addEventListener('change', () => {
+        populateTemplates();
+        generateMeme();
+      });
+      
+      // Template change
+      templateSelect.addEventListener('change', () => {
+        currentTemplate = MEME_TEMPLATES.find(t => t.id === templateSelect.value);
+        generateMeme();
+      });
+      
+      // Text input changes
+      topTextInput.addEventListener('input', generateMeme);
+      bottomTextInput.addEventListener('input', generateMeme);
+      
+      // Font size change
+      fontSizeInput.addEventListener('input', () => {
+        fontSizeValue.textContent = fontSizeInput.value;
+        generateMeme();
+      });
+      
+      // Color selection
+      textColorOptions.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', () => {
+          selectedTextColor = option.dataset.color;
+          document.querySelectorAll('#text-color-options .color-option').forEach(o => {
+            o.classList.remove('selected');
+          });
+          option.classList.add('selected');
+          generateMeme();
+        });
+      });
+      
+      outlineColorOptions.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', () => {
+          selectedOutlineColor = option.dataset.color;
+          document.querySelectorAll('#outline-color-options .color-option').forEach(o => {
+            o.classList.remove('selected');
+          });
+          option.classList.add('selected');
+          generateMeme();
+        });
+      });
+      
+      // Advanced options toggle
+      advancedToggle.addEventListener('click', () => {
+        const isVisible = advancedOptions.style.display === 'block';
+        advancedOptions.style.display = isVisible ? 'none' : 'block';
+        advancedToggle.querySelector('.fa-chevron-down').style.transform = 
+          isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+      });
+      
+      // Position sliders
+      [topXInput, topYInput, bottomXInput, bottomYInput].forEach(slider => {
+        slider.addEventListener('input', () => {
+          updateSliderValues();
+          generateMeme();
+        });
+      });
+      
+      // Download button
+      downloadBtn.addEventListener('click', downloadMeme);
+      
+      // Mobile menu toggle
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+      });
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && e.target !== mobileMenuBtn) {
+          mobileMenu.style.display = 'none';
+        }
+      });
+      
+      // Home link
+      homeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        mobileMenu.style.display = 'none';
+      });
+    }
+    
+    // Update slider display values
+    function updateSliderValues() {
+      topXValue.textContent = topXInput.value;
+      topYValue.textContent = topYInput.value;
+      bottomXValue.textContent = bottomXInput.value;
+      bottomYValue.textContent = bottomYInput.value;
+    }
+    
+    // Generate the meme
+    function generateMeme() {
+      if (!currentTemplate) return;
+      
+      // Clear any previous errors
+      errorMessage.style.display = 'none';
+      
+      // Load the template image
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        currentImage = img;
+        drawMeme(img);
+      };
+      img.onerror = () => {
+        errorMessage.textContent = 'Failed to load template image. Please try another template.';
+        errorMessage.style.display = 'block';
+      };
+      img.src = currentTemplate.url;
+    }
+    
+    // Draw the meme on canvas
+    function drawMeme(img) {
+      // Set canvas dimensions
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw the image
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      
+      // Set text properties
+      const fontSize = parseInt(fontSizeInput.value);
+      ctx.font = `bold ${fontSize}px Impact, Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.lineJoin = 'round';
+      
+      // Draw top text
+      if (topTextInput.value.trim()) {
+        drawText(
+          topTextInput.value, 
+          canvas.width * (parseInt(topXInput.value) / 100),
+          canvas.height * (parseInt(topYInput.value) / 100),
+          fontSize,
+          selectedTextColor,
+          selectedOutlineColor
+        );
+      }
+      
+      // Draw bottom text
+      if (bottomTextInput.value.trim()) {
+        drawText(
+          bottomTextInput.value, 
+          canvas.width * (parseInt(bottomXInput.value) / 100),
+          canvas.height * (parseInt(bottomYInput.value) / 100),
+          fontSize,
+          selectedTextColor,
+          selectedOutlineColor
+        );
+      }
+    }
+    
+    // Draw text with outline
+    function drawText(text, x, y, fontSize, textColor, outlineColor) {
+      const maxWidth = canvas.width * 0.9;
+      const lineHeight = fontSize * 1.3;
+      const outlineWidth = Math.max(2, fontSize / 15);
+      
+      // Wrap text
+      const lines = wrapText(text, maxWidth, fontSize);
+      
+      // Calculate total height
+      const totalHeight = lines.length * lineHeight;
+      
+      // Adjust starting position for centered text
+      const startY = y - (totalHeight / 2);
+      
+      // Draw each line
+      lines.forEach((line, i) => {
+        const lineY = startY + (i * lineHeight);
+        
+        // Draw outline
+        ctx.strokeStyle = outlineColor;
+        ctx.lineWidth = outlineWidth;
+        ctx.strokeText(line, x, lineY);
+        
+        // Draw text
+        ctx.fillStyle = textColor;
+        ctx.fillText(line, x, lineY);
+      });
+    }
+    
+    // Wrap text to fit within maxWidth
+    function wrapText(text, maxWidth, fontSize) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = words[0];
+      
+      ctx.font = `bold ${fontSize}px Impact, Arial, sans-serif`;
+      
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine + ' ' + word;
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width < maxWidth) {
+          currentLine = testLine;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      
+      lines.push(currentLine);
+      return lines;
+    }
+    
+    // Download the meme
+    function downloadMeme() {
+      if (!currentImage) {
+        errorMessage.textContent = 'Please generate a meme first';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      const link = document.createElement('a');
+      link.download = `${currentTemplate.name}-meme.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+    
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
